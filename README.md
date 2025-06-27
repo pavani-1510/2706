@@ -344,19 +344,10 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 Given the root of a binary tree, return the **length of the diameter** of the tree.
 The diameter is the **longest path between any two nodes**, counted by **number of edges**, not nodes.
 
----
 
-#### 🧠 Approach:
 
-* Do a **post-order DFS**.
-* At each node, calculate:
+#### 🧠 Approach: **post-order DFS**.
 
-  * height of left subtree
-  * height of right subtree
-  * sum = leftHeight + rightHeight → possible diameter
-* Track the **maximum** diameter globally.
-
----
 
 #### 💻 Code:
 
@@ -389,15 +380,10 @@ class Solution {
 
 Given a string `s`, return the length of the **longest substring without repeating characters**.
 
----
 
-#### 🧠 Approach:
+#### 🧠 Approach: **sliding window** with `HashSet` or `Map`.
 
-* Use **sliding window** with `HashSet` or `Map`.
-* Move `right` pointer forward.
-* If duplicate seen, move `left` pointer until the duplicate is removed.
 
----
 
 #### 💻 Code:
 
@@ -428,15 +414,10 @@ class Solution {
 
 Given an integer array `nums` and an integer `k`, return the `k` most frequent elements.
 
----
 
 #### 🧠 Bucket Sort Approach:
 
-* Count frequency using a `Map`.
-* Store elements in buckets where index = frequency.
-* Traverse from highest frequency down and collect top `k` elements.
 
----
 
 #### 💻 Code:
 
@@ -472,9 +453,7 @@ class Solution {
 
 ---
 
-Absolutely Pavani! Here's the full comparison and both implementations (DFS & BFS) for:
 
----
 
 ## ✅ **16. Minimum Depth of Binary Tree - LeetCode 111**
 
@@ -486,17 +465,8 @@ Given a binary tree, return the **minimum depth**, i.e., the shortest path from 
 
 * A **leaf** is a node with **no left or right child**.
 
----
 
 ## ✅ 1. DFS (Depth-First Search) Approach
-
-### 🧠 Logic:
-
-* Explore **both subtrees** recursively.
-* If one child is null, only go down the **non-null** side.
-* Base case: root is a **leaf** → return 1.
-
----
 
 ### 💻 Java Code:
 
@@ -515,17 +485,10 @@ class Solution {
 }
 ```
 
----
+
 
 ## ✅ 2. BFS (Breadth-First Search) Approach
 
-### 🧠 Logic:
-
-* BFS visits nodes **level by level**.
-* The **first leaf** encountered is at **minimum depth**.
-* Return as soon as you see a **leaf node**.
-
----
 
 ### 💻 Java Code:
 
@@ -567,15 +530,9 @@ class Solution {
 
 Given an integer `n`, break it into the sum of **at least two** positive integers, and return the **maximum product** you can get.
 
----
 
 #### 🧠 Greedy + Math Approach:
 
-* Use as many **3s** as possible.
-* If remainder is 1, convert to 2+2.
-* Multiply all parts.
-
----
 
 #### 💻 Code:
 
@@ -594,6 +551,189 @@ class Solution {
     }
 }
 ```
+---
+
+## ✅ Problem 
+
+You are given:
+
+* An **undirected**, **weighted**, **connected** graph with `V` vertices (numbered from `0` to `V-1`) and `E` edges.
+* The graph is described using a 2D array `edges[][]`, where `edges[i] = [u, v, w]` represents an edge between vertices `u` and `v` with weight `w`.
+* A source vertex `src`.
+
+You need to **find the shortest distance from the source vertex `src` to every other vertex** in the graph and return it as an array.
+
+## ✅ Approach:  **Dijkstra’s Algorithm** with a **Min-Heap (PriorityQueue)**:
+
+
+```java
+import java.util.*;
+
+class Solution {
+    static class Pair {
+        int node, dist;
+        Pair(int node, int dist) {
+            this.node = node;
+            this.dist = dist;
+        }
+    }
+
+    public static int[] dijkstra(int V, int[][] edges, int src) {
+        List<List<Pair>> graph = new ArrayList<>();
+        for (int i = 0; i < V; i++) graph.add(new ArrayList<>());
+        for (int[] edge : edges) {
+            int u = edge[0], v = edge[1], w = edge[2];
+            graph.get(u).add(new Pair(v, w));
+            graph.get(v).add(new Pair(u, w));
+        }
+
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
+        dist[src] = 0;
+
+        PriorityQueue<Pair> pq = new PriorityQueue<>(Comparator.comparingInt(a -> a.dist));
+        pq.add(new Pair(src, 0));
+
+        while (!pq.isEmpty()) {
+            Pair current = pq.poll();
+            int u = current.node;
+            int d = current.dist;
+
+            for (Pair neighbor : graph.get(u)) {
+                int v = neighbor.node, w = neighbor.dist;
+                if (d + w < dist[v]) {
+                    dist[v] = d + w;
+                    pq.add(new Pair(v, dist[v]));
+                }
+            }
+        }
+
+        return dist;
+    }
+
+    public static void main(String[] args) {
+        int V = 5;
+        int[][] edges = {
+            {0, 1, 4}, {0, 2, 8}, {1, 4, 6}, {2, 3, 2}, {3, 4, 10}
+        };
+        int src = 0;
+
+        int[] result = dijkstra(V, edges, src);
+        System.out.println(Arrays.toString(result));  // Output: [0, 4, 8, 10, 10]
+    }
+}
+```
 
 ---
+
+
+### 🧾 **Problem :**
+
+You are given an integer array `arr[]` and an integer `k`. Your task is to **count the number of subarrays** whose elements’ XOR is equal to `k`.
+
+### ✅ **Approach :** Optimal - Prefix XOR + HashMap
+
+
+```java
+import java.util.*;
+
+public class CountSubarraysWithXOR {
+    public static int countSubarrays(int[] arr, int k) {
+        Map<Integer, Integer> map = new HashMap<>();
+        int xor = 0, count = 0;
+
+        for (int num : arr) {
+            xor ^= num;
+            if (xor == k) count++;
+            int required = xor ^ k;
+            count += map.getOrDefault(required, 0);
+            map.put(xor, map.getOrDefault(xor, 0) + 1);
+        }
+
+        return count;
+    }
+
+    public static void main(String[] args) {
+        System.out.println(countSubarrays(new int[]{4, 2, 2, 6, 4}, 6)); // Output: 4
+        System.out.println(countSubarrays(new int[]{5, 6, 7, 8, 9}, 5)); // Output: 2
+        System.out.println(countSubarrays(new int[]{1, 1, 1, 1}, 0));    // Output: 4
+    }
+}
+```
+
+---
+
+
+## ✅ Problem :
+
+You are given two arrays:
+
+* `deadline[]`: deadlines for each job
+* `profit[]`: profit for each job
+
+Each job takes **1 unit of time** to complete and must be finished **on or before its deadline** to earn profit. You can schedule **only one job at a time**.
+
+Your task is to find:
+
+* The **maximum number of jobs** that can be completed within their deadlines.
+* The **maximum profit** you can earn from those jobs.
+
+
+
+## ✅ Approach: (Greedy + Sorting)
+
+
+
+```java
+import java.util.*;
+
+class Job {
+    int deadline, profit;
+    Job(int d, int p) {
+        deadline = d;
+        profit = p;
+    }
+}
+
+public class JobSequencing {
+
+    public static int[] jobScheduling(int[] deadline, int[] profit) {
+        int n = deadline.length;
+        Job[] jobs = new Job[n];
+
+        for (int i = 0; i < n; i++) {
+            jobs[i] = new Job(deadline[i], profit[i]);
+        }
+
+        Arrays.sort(jobs, (a, b) -> b.profit - a.profit);
+
+        int maxDeadline = 0;
+        for (Job job : jobs) {
+            maxDeadline = Math.max(maxDeadline, job.deadline);
+        }
+
+        boolean[] slot = new boolean[maxDeadline + 1];
+        int jobCount = 0, maxProfit = 0;
+
+        for (Job job : jobs) {
+            for (int t = job.deadline; t > 0; t--) {
+                if (!slot[t]) {
+                    slot[t] = true;
+                    jobCount++;
+                    maxProfit += job.profit;
+                    break;
+                }
+            }
+        }
+
+        return new int[]{jobCount, maxProfit};
+    }
+
+    public static void main(String[] args) {
+        System.out.println(Arrays.toString(jobScheduling(new int[]{4, 1, 1, 1}, new int[]{20, 10, 40, 30})));  // [2, 60]
+        System.out.println(Arrays.toString(jobScheduling(new int[]{2, 1, 2, 1, 1}, new int[]{100, 19, 27, 25, 15})));  // [2, 127]
+        System.out.println(Arrays.toString(jobScheduling(new int[]{3, 1, 2, 2}, new int[]{50, 10, 20, 30})));  // [3, 100]
+    }
+}
+```
 
