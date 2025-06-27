@@ -337,19 +337,15 @@ public boolean canFinish(int numCourses, int[][] prerequisites) {
 }
 ```
 
-### **13. Diameter of Binary Tree – LeetCode 543**
+---
 
-#### ✅ Problem Statement:
+### **13. Diameter of Binary Tree – Leetcode 543**
 
-Given the root of a binary tree, return the **length of the diameter** of the tree.
-The diameter is the **longest path between any two nodes**, counted by **number of edges**, not nodes.
+**Problem**:
+Given the root of a binary tree, return the **length of the diameter** of the tree. The diameter is the **longest path between any two nodes** in the tree (measured by **number of edges**).
 
-
-
-#### 🧠 Approach: **post-order DFS**.
-
-
-#### 💻 Code:
+**Approach**: Post-order DFS
+At each node, compute the depth of left and right subtrees, and update diameter as the sum.
 
 ```java
 class Solution {
@@ -362,11 +358,9 @@ class Solution {
 
     private int dfs(TreeNode node) {
         if (node == null) return 0;
-
         int left = dfs(node.left);
         int right = dfs(node.right);
         maxDiameter = Math.max(maxDiameter, left + right);
-
         return 1 + Math.max(left, right);
     }
 }
@@ -374,18 +368,13 @@ class Solution {
 
 ---
 
-### **14. Longest Substring Without Repeating Characters – LeetCode 3**
+### **14. Longest Substring Without Repeating Characters – Leetcode 3**
 
-#### ✅ Problem Statement:
-
+**Problem**:
 Given a string `s`, return the length of the **longest substring without repeating characters**.
 
-
-#### 🧠 Approach: **sliding window** with `HashSet` or `Map`.
-
-
-
-#### 💻 Code:
+**Approach**: Sliding Window + HashSet
+Expand right pointer and shrink left when duplicate character is seen.
 
 ```java
 class Solution {
@@ -408,18 +397,13 @@ class Solution {
 
 ---
 
-### **15. Top K Frequent Elements – LeetCode 347**
+### **15. Top K Frequent Elements – Leetcode 347**
 
-#### ✅ Problem Statement:
-
+**Problem**:
 Given an integer array `nums` and an integer `k`, return the `k` most frequent elements.
 
-
-#### 🧠 Bucket Sort Approach:
-
-
-
-#### 💻 Code:
+**Approach**: Bucket Sort
+Use frequency map and group elements by frequency.
 
 ```java
 class Solution {
@@ -453,44 +437,27 @@ class Solution {
 
 ---
 
+### **16. Minimum Depth of Binary Tree – Leetcode 111**
 
-
-## ✅ **16. Minimum Depth of Binary Tree - LeetCode 111**
+**Problem**:
+Given the root of a binary tree, return its **minimum depth** (from root to the nearest leaf node).
 
 ---
 
-### 🎯 **Problem Statement Recap**:
-
-Given a binary tree, return the **minimum depth**, i.e., the shortest path from the **root** to the **nearest leaf node**.
-
-* A **leaf** is a node with **no left or right child**.
-
-
-## ✅ 1. DFS (Depth-First Search) Approach
-
-### 💻 Java Code:
+**Approach 1**: DFS (Recursive)
 
 ```java
 class Solution {
     public int minDepth(TreeNode root) {
         if (root == null) return 0;
-
-        // If one of the subtrees is null, return the depth of the other + 1
         if (root.left == null) return 1 + minDepth(root.right);
         if (root.right == null) return 1 + minDepth(root.left);
-
-        // If both exist, take the minimum
         return 1 + Math.min(minDepth(root.left), minDepth(root.right));
     }
 }
 ```
 
-
-
-## ✅ 2. BFS (Breadth-First Search) Approach
-
-
-### 💻 Java Code:
+**Approach 2**: BFS (Level Order Traversal)
 
 ```java
 class Solution {
@@ -503,14 +470,10 @@ class Solution {
 
         while (!queue.isEmpty()) {
             int size = queue.size();
-
             for (int i = 0; i < size; i++) {
                 TreeNode node = queue.poll();
-
-                // Leaf node
                 if (node.left == null && node.right == null)
                     return depth;
-
                 if (node.left != null) queue.offer(node.left);
                 if (node.right != null) queue.offer(node.right);
             }
@@ -524,17 +487,13 @@ class Solution {
 
 ---
 
-### **17. Break Number (Integer Break) – LeetCode 343**
+### **17. Break Number (Integer Break) – Leetcode 343**
 
-#### ✅ Problem Statement:
+**Problem**:
+Given an integer `n`, break it into the sum of **at least two positive integers** and return the **maximum product**.
 
-Given an integer `n`, break it into the sum of **at least two** positive integers, and return the **maximum product** you can get.
-
-
-#### 🧠 Greedy + Math Approach:
-
-
-#### 💻 Code:
+**Approach**: Greedy
+Keep breaking `n` into as many 3’s as possible.
 
 ```java
 class Solution {
@@ -551,20 +510,62 @@ class Solution {
     }
 }
 ```
+
 ---
 
-## ✅ Problem 
 
-You are given:
+### **18. Square Submatrix with Sum ≤ K – Leetcode 363**
 
-* An **undirected**, **weighted**, **connected** graph with `V` vertices (numbered from `0` to `V-1`) and `E` edges.
-* The graph is described using a 2D array `edges[][]`, where `edges[i] = [u, v, w]` represents an edge between vertices `u` and `v` with weight `w`.
-* A source vertex `src`.
+**Problem**:
+Given a `m x n` matrix and an integer `k`, find the **maximum sum** of a **rectangle** (submatrix) that is no more than `k`.
 
-You need to **find the shortest distance from the source vertex `src` to every other vertex** in the graph and return it as an array.
+**Approach**:
 
-## ✅ Approach:  **Dijkstra’s Algorithm** with a **Min-Heap (PriorityQueue)**:
+1. Fix left and right columns.
+2. Convert the 2D problem into a 1D subarray sum problem using Kadane's + TreeSet.
+3. For each row sum, use prefix sums and TreeSet to find smallest prefix ≥ (sum - k).
 
+```java
+class Solution {
+    public int maxSumSubmatrix(int[][] matrix, int k) {
+        int maxSum = Integer.MIN_VALUE;
+        int rows = matrix.length, cols = matrix[0].length;
+
+        for (int left = 0; left < cols; left++) {
+            int[] rowSum = new int[rows];
+            for (int right = left; right < cols; right++) {
+                for (int i = 0; i < rows; i++) {
+                    rowSum[i] += matrix[i][right];
+                }
+
+                TreeSet<Integer> prefixSet = new TreeSet<>();
+                prefixSet.add(0);
+                int sum = 0;
+
+                for (int rSum : rowSum) {
+                    sum += rSum;
+                    Integer target = prefixSet.ceiling(sum - k);
+                    if (target != null) {
+                        maxSum = Math.max(maxSum, sum - target);
+                    }
+                    prefixSet.add(sum);
+                }
+            }
+        }
+        return maxSum;
+    }
+}
+```
+
+---
+
+### **19. Dijkstra’s Algorithm – Shortest Path in Weighted Graph**
+
+**Problem**:
+Given a weighted, undirected, connected graph with `V` vertices and a source vertex `src`, find the **shortest distance** from the source to all other vertices.
+
+**Approach**:
+Dijkstra’s Algorithm using **Min-Heap (PriorityQueue)**.
 
 ```java
 import java.util.*;
@@ -596,8 +597,7 @@ class Solution {
 
         while (!pq.isEmpty()) {
             Pair current = pq.poll();
-            int u = current.node;
-            int d = current.dist;
+            int u = current.node, d = current.dist;
 
             for (Pair neighbor : graph.get(u)) {
                 int v = neighbor.node, w = neighbor.dist;
@@ -610,29 +610,18 @@ class Solution {
 
         return dist;
     }
-
-    public static void main(String[] args) {
-        int V = 5;
-        int[][] edges = {
-            {0, 1, 4}, {0, 2, 8}, {1, 4, 6}, {2, 3, 2}, {3, 4, 10}
-        };
-        int src = 0;
-
-        int[] result = dijkstra(V, edges, src);
-        System.out.println(Arrays.toString(result));  // Output: [0, 4, 8, 10, 10]
-    }
 }
 ```
 
 ---
 
+### **20. Count Subarrays with XOR = K**
 
-### 🧾 **Problem :**
+**Problem**:
+Given an integer array `arr[]` and an integer `k`, count the number of **subarrays** whose XOR is equal to `k`.
 
-You are given an integer array `arr[]` and an integer `k`. Your task is to **count the number of subarrays** whose elements’ XOR is equal to `k`.
-
-### ✅ **Approach :** Optimal - Prefix XOR + HashMap
-
+**Approach**: Prefix XOR + HashMap
+Let `prefixXOR ^ k = requiredPrefix`. Keep track of prefix XORs and their frequencies.
 
 ```java
 import java.util.*;
@@ -652,88 +641,7 @@ public class CountSubarraysWithXOR {
 
         return count;
     }
-
-    public static void main(String[] args) {
-        System.out.println(countSubarrays(new int[]{4, 2, 2, 6, 4}, 6)); // Output: 4
-        System.out.println(countSubarrays(new int[]{5, 6, 7, 8, 9}, 5)); // Output: 2
-        System.out.println(countSubarrays(new int[]{1, 1, 1, 1}, 0));    // Output: 4
-    }
 }
 ```
 
----
-
-
-## ✅ Problem :
-
-You are given two arrays:
-
-* `deadline[]`: deadlines for each job
-* `profit[]`: profit for each job
-
-Each job takes **1 unit of time** to complete and must be finished **on or before its deadline** to earn profit. You can schedule **only one job at a time**.
-
-Your task is to find:
-
-* The **maximum number of jobs** that can be completed within their deadlines.
-* The **maximum profit** you can earn from those jobs.
-
-
-
-## ✅ Approach: (Greedy + Sorting)
-
-
-
-```java
-import java.util.*;
-
-class Job {
-    int deadline, profit;
-    Job(int d, int p) {
-        deadline = d;
-        profit = p;
-    }
-}
-
-public class JobSequencing {
-
-    public static int[] jobScheduling(int[] deadline, int[] profit) {
-        int n = deadline.length;
-        Job[] jobs = new Job[n];
-
-        for (int i = 0; i < n; i++) {
-            jobs[i] = new Job(deadline[i], profit[i]);
-        }
-
-        Arrays.sort(jobs, (a, b) -> b.profit - a.profit);
-
-        int maxDeadline = 0;
-        for (Job job : jobs) {
-            maxDeadline = Math.max(maxDeadline, job.deadline);
-        }
-
-        boolean[] slot = new boolean[maxDeadline + 1];
-        int jobCount = 0, maxProfit = 0;
-
-        for (Job job : jobs) {
-            for (int t = job.deadline; t > 0; t--) {
-                if (!slot[t]) {
-                    slot[t] = true;
-                    jobCount++;
-                    maxProfit += job.profit;
-                    break;
-                }
-            }
-        }
-
-        return new int[]{jobCount, maxProfit};
-    }
-
-    public static void main(String[] args) {
-        System.out.println(Arrays.toString(jobScheduling(new int[]{4, 1, 1, 1}, new int[]{20, 10, 40, 30})));  // [2, 60]
-        System.out.println(Arrays.toString(jobScheduling(new int[]{2, 1, 2, 1, 1}, new int[]{100, 19, 27, 25, 15})));  // [2, 127]
-        System.out.println(Arrays.toString(jobScheduling(new int[]{3, 1, 2, 2}, new int[]{50, 10, 20, 30})));  // [3, 100]
-    }
-}
-```
 
